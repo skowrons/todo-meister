@@ -1,29 +1,39 @@
 package cmd
 
 import (
-	"fmt"
-	"os"
-
 	"github.com/skowrons/todo-meister/pkg/config"
-	"github.com/skowrons/todo-meister/pkg/connectors"
+	"github.com/skowrons/todo-meister/pkg/connectors/terminal"
 	"github.com/skowrons/todo-meister/pkg/exec"
 	"github.com/spf13/cobra"
 )
 
+type ListConfig struct {
+	Path  string
+	Count bool
+}
+
 func NewListCmd() *cobra.Command {
-	return &cobra.Command{
+	var cfg ListConfig
+
+	cmd := &cobra.Command{
 		Use:     "list",
 		Short:   "List all todos in your project.",
 		Long:    "List is a alias for the command generate --connector cli",
 		Aliases: []string{"ls"},
 		Run: func(cmd *cobra.Command, args []string) {
-			if len(args) != 1 {
-				fmt.Println("You need to provide the path as the first and only arg.")
-				os.Exit(1)
+			conf := config.LoadConfig()
+
+			if cfg.Count {
+				exec.BaseExec(conf, cfg.Path, terminal.NewCountTerminalConnector())
+				return
 			}
-			root := args[0]
-			cfg := config.LoadConfig()
-			exec.BaseExec(cfg, root, connectors.NewTerminalConnector())
+
+			exec.BaseExec(conf, cfg.Path, terminal.NewTableTerminalConnector())
 		},
 	}
+
+	cmd.Flags().StringVar(&cfg.Path, "path", ".", "The path to the folder that should be scanned.")
+	cmd.Flags().BoolVarP(&cfg.Count, "count", "c", false, "Define if you only what the count of all matched keywords.")
+
+	return cmd
 }

@@ -15,5 +15,5 @@ func BaseExec(cfg *config.Config, root string, con connectors.Connector) {
 		entries = append(entries, meister.ScanFile(path, cfg)...)
 	}
 
-	con.Exec(entries)
+	con.Exec(cfg, entries)
 }
