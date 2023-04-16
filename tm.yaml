@@ -1,0 +1,12 @@
+ignores:
+  node_modules: ""
+  exclude: ""
+  venv: ""
+  .git: ""
+  docs: ""
+  tm.yaml: ""
+manageLabel: "managed-by::tm"
+fields:
+  - text: "TODO:"
+    labels:
+     - "type::refactor"
