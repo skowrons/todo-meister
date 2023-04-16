@@ -13,7 +13,7 @@ import (
 // TODO: add more functions to this one
 type FileIndex []string
 
-// Walk will walk the provided path and return an index of all files including 
+// Walk will walk the provided path and return an index of all files including
 // their path. Each path will be relativ.
 func Walk(config *config.Config, root string) FileIndex {
 	index := FileIndex{}
@@ -22,7 +22,7 @@ func Walk(config *config.Config, root string) FileIndex {
 		if d.IsDir() {
 			levels := strings.Split(path, "/")
 			dir := levels[len(levels)-1]
-			
+
 			_, ok := config.Ignores[dir]
 			if ok {
 				return filepath.SkipDir
@@ -30,13 +30,19 @@ func Walk(config *config.Config, root string) FileIndex {
 
 			return nil
 		}
-		
+
+		levels := strings.Split(path, "/")
+		file := levels[len(levels)-1]
+		_, ok := config.Ignores[file]
+		if ok {
+			return nil
+		}
 
 		index = append(index, path)
 
 		return nil
 	})
-	
+
 	return index
 }
 
@@ -48,7 +54,7 @@ type Entry struct {
 	KeyWord   string
 	LineIndex int
 	FilePath  string
-	Comment string
+	Comment   string
 }
 
 func ScanFile(path string, config *config.Config) []Entry {
@@ -69,12 +75,12 @@ func ScanFile(path string, config *config.Config) []Entry {
 				KeyWord:   config.Fields[0].Text,
 				LineIndex: lineIndex,
 				FilePath:  path,
-				Comment: strings.Split(scanner.Text(), config.Fields[0].Text)[1],
+				Comment:   strings.Split(scanner.Text(), config.Fields[0].Text)[1],
 			})
 		}
 		lineIndex++
 	}
-	
+
 	return entries
 }
 
