@@ -1,0 +1,6 @@
+main
+dist
+exclude
+.env
+.DS_Store
+.vscode
